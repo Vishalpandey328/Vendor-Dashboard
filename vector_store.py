@@ -12,8 +12,8 @@ def build_index(embeddings):
     return index
 
 
-def search_index(index, query_embedding, top_k=5):
+def search_index(index, query_embedding):
 
-    distances, indices = index.search(query_embedding, top_k)
+    distances, indices = index.search(query_embedding, 1)
 
     return distances, indices
