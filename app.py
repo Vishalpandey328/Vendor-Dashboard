@@ -16,192 +16,203 @@ from sentence_transformers import SentenceTransformer
 st.set_page_config(
     page_title="AI Center Matching System",
     page_icon="🎯",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
 # --------------------------------------------------
-# FUTURISTIC CYBERPUNK UI STYLE
+# PROFESSIONAL CYBERPUNK UI STYLE
 # --------------------------------------------------
 
 st.markdown("""
 <style>
-    /* Import futuristic fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+    /* Professional Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
     
     /* Global styles */
     .stApp {
-        background: radial-gradient(circle at 50% 50%, #0a0f1f 0%, #030514 100%);
-        font-family: 'Rajdhani', sans-serif;
+        background: linear-gradient(135deg, #0a0f1f 0%, #1a1f2f 100%);
+        font-family: 'Inter', sans-serif;
     }
     
-    /* Main title with neon effect */
-    .neon-title {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 48px;
-        font-weight: 900;
-        text-align: center;
-        background: linear-gradient(135deg, #00ffff, #ff00ff, #00ffff);
+    /* Main title */
+    .main-title {
+        font-family: 'Poppins', sans-serif;
+        font-size: 32px;
+        font-weight: 600;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
-        letter-spacing: 3px;
-        margin: 20px 0 5px 0;
-        animation: glowPulse 3s infinite;
-    }
-    
-    @keyframes glowPulse {
-        0%, 100% { filter: brightness(1); text-shadow: 0 0 30px rgba(0,255,255,0.5); }
-        50% { filter: brightness(1.3); text-shadow: 0 0 50px rgba(255,0,255,0.8); }
-    }
-    
-    /* Subtitle with cyber effect */
-    .cyber-subtitle {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 18px;
         text-align: center;
-        color: #00ffff;
-        text-shadow: 0 0 15px #00ffff;
-        letter-spacing: 4px;
-        margin-bottom: 30px;
-        position: relative;
+        margin: 10px 0 5px 0;
+        letter-spacing: -0.5px;
     }
     
-    .cyber-subtitle::before,
-    .cyber-subtitle::after {
-        content: "⚡";
-        color: #ff00ff;
-        margin: 0 15px;
-        text-shadow: 0 0 15px #ff00ff;
+    /* Subtitle */
+    .sub-title {
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        text-align: center;
+        color: #a0a0a0;
+        margin-bottom: 15px;
+        font-weight: 400;
     }
     
     /* Company name */
     .company-name {
-        font-family: 'Share Tech Mono', monospace;
-        font-size: 16px;
+        font-family: 'Inter', sans-serif;
+        font-size: 12px;
         text-align: center;
-        color: #ff00ff;
-        text-shadow: 0 0 10px #ff00ff;
-        margin-bottom: 30px;
-        letter-spacing: 2px;
+        color: #667eea;
+        margin-bottom: 20px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
     
-    /* Metric cards */
+    /* Metric cards - Compact */
     .metric-card {
-        background: rgba(0, 255, 255, 0.05);
-        border: 1px solid rgba(0, 255, 255, 0.3);
-        border-radius: 15px;
-        padding: 20px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(102, 126, 234, 0.2);
+        border-radius: 8px;
+        padding: 12px;
         text-align: center;
         backdrop-filter: blur(10px);
         transition: all 0.3s ease;
     }
     
     .metric-card:hover {
-        transform: translateY(-5px);
-        border-color: #ff00ff;
-        box-shadow: 0 0 30px rgba(255, 0, 255, 0.3);
+        border-color: #667eea;
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.2);
     }
     
     .metric-label {
-        font-family: 'Orbitron', sans-serif;
-        color: #00ffff;
-        font-size: 14px;
-        letter-spacing: 1px;
+        font-family: 'Inter', sans-serif;
+        color: #a0a0a0;
+        font-size: 11px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
     
     .metric-value {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 24px;
-        font-weight: 700;
-        color: #ff00ff;
-        text-shadow: 0 0 15px #ff00ff;
+        font-family: 'Poppins', sans-serif;
+        font-size: 18px;
+        font-weight: 600;
+        color: #667eea;
+        margin-top: 4px;
     }
     
     /* Button styling */
     .stButton > button {
-        font-family: 'Orbitron', sans-serif;
-        background: linear-gradient(45deg, #00ffff, #ff00ff);
-        color: #000;
-        font-weight: 700;
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-weight: 500;
         border: none;
-        padding: 12px 30px;
-        border-radius: 30px;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 13px;
         transition: all 0.3s ease;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .stButton > button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 0 30px rgba(255, 0, 255, 0.7);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
     }
     
-    /* Progress bar styling */
+    /* File uploader - Compact */
+    .stFileUploader {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px dashed #667eea;
+        border-radius: 6px;
+        padding: 10px;
+    }
+    
+    .stFileUploader:hover {
+        border-color: #764ba2;
+        background: rgba(102, 126, 234, 0.05);
+    }
+    
+    /* Upload labels */
+    .upload-label {
+        font-family: 'Inter', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        color: #667eea;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    /* File info */
+    .file-info {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 11px;
+        color: #a0a0a0;
+        background: rgba(0, 0, 0, 0.2);
+        padding: 4px 8px;
+        border-radius: 4px;
+        margin-top: 5px;
+    }
+    
+    /* Section headers - Minimal */
+    .section-header {
+        font-family: 'Poppins', sans-serif;
+        font-size: 18px;
+        font-weight: 500;
+        color: white;
+        margin: 15px 0 10px 0;
+        padding-bottom: 5px;
+        border-bottom: 1px solid rgba(102, 126, 234, 0.3);
+    }
+    
+    /* Divider */
+    .divider {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #667eea, transparent);
+        margin: 15px 0;
+    }
+    
+    /* Progress bar */
     .stProgress > div > div > div {
-        background: linear-gradient(90deg, #00ffff, #ff00ff, #00ffff);
-        background-size: 200% 100%;
-        animation: gradientMove 2s linear infinite;
-        height: 20px;
-        border-radius: 10px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        height: 6px;
+        border-radius: 3px;
     }
     
-    @keyframes gradientMove {
-        0% { background-position: 0% 50%; }
-        100% { background-position: 200% 50%; }
-    }
-    
-    /* FUTURISTIC POPUP STYLES */
+    /* POPUP STYLES */
     .popup-overlay {
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(0, 0, 0, 0.85);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
         z-index: 9998;
-        animation: fadeIn 0.3s ease;
     }
     
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    
-    .holographic-popup {
+    .popup-container {
         position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 600px;
-        background: rgba(10, 20, 40, 0.95);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 2px solid;
-        border-image: linear-gradient(45deg, #00ffff, #ff00ff, #00ffff) 1;
-        border-radius: 30px;
-        padding: 30px;
+        width: 450px;
+        background: #1a1f2f;
+        border: 1px solid #667eea;
+        border-radius: 12px;
+        padding: 25px;
         z-index: 9999;
-        box-shadow: 
-            0 0 50px rgba(0, 255, 255, 0.5),
-            0 0 100px rgba(255, 0, 255, 0.3),
-            inset 0 0 50px rgba(0, 255, 255, 0.2);
-        animation: popupPulse 2s infinite, slideIn 0.5s ease;
-    }
-    
-    @keyframes popupPulse {
-        0%, 100% { border-color: #00ffff; box-shadow: 0 0 50px rgba(0,255,255,0.5); }
-        50% { border-color: #ff00ff; box-shadow: 0 0 80px rgba(255,0,255,0.7); }
+        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+        animation: slideIn 0.3s ease;
     }
     
     @keyframes slideIn {
         from {
             opacity: 0;
-            transform: translate(-50%, -40%);
+            transform: translate(-50%, -45%);
         }
         to {
             opacity: 1;
@@ -213,257 +224,155 @@ st.markdown("""
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 25px;
-        border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+        margin-bottom: 20px;
         padding-bottom: 15px;
+        border-bottom: 1px solid rgba(102, 126, 234, 0.3);
     }
     
     .popup-title {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 28px;
-        font-weight: 800;
-        background: linear-gradient(45deg, #00ffff, #ff00ff);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-transform: uppercase;
-        letter-spacing: 3px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 20px;
+        font-weight: 600;
+        color: #667eea;
     }
     
-    .progress-container {
-        margin: 30px 0;
-    }
-    
-    .progress-label {
-        font-family: 'Share Tech Mono', monospace;
-        color: #00ffff;
-        font-size: 16px;
-        margin-bottom: 10px;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-    }
-    
-    .progress-bar-container {
-        width: 100%;
-        height: 20px;
-        background: rgba(0, 0, 0, 0.5);
-        border: 1px solid #00ffff;
-        border-radius: 10px;
-        overflow: hidden;
-        position: relative;
-        margin: 10px 0;
-    }
-    
-    .progress-bar-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #00ffff, #ff00ff);
-        width: 0%;
-        transition: width 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .progress-bar-fill::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(90deg, 
-            transparent, 
-            rgba(255, 255, 255, 0.3), 
-            transparent
-        );
-        animation: scan 2s linear infinite;
-    }
-    
-    @keyframes scan {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
-    }
-    
-    .progress-percentage {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 48px;
-        font-weight: 900;
-        text-align: center;
-        background: linear-gradient(45deg, #00ffff, #ff00ff);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin: 20px 0;
-        text-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
-    }
-    
-    .status-messages {
-        background: rgba(0, 0, 0, 0.5);
-        border: 1px solid #00ffff;
-        border-radius: 15px;
-        padding: 20px;
-        height: 200px;
-        overflow-y: auto;
-        font-family: 'Share Tech Mono', monospace;
-        margin: 20px 0;
-    }
-    
-    .status-message {
-        padding: 8px;
-        margin: 5px 0;
-        border-left: 3px solid #ff00ff;
-        color: #00ffff;
-        animation: messageSlide 0.3s ease;
-    }
-    
-    @keyframes messageSlide {
-        from {
-            opacity: 0;
-            transform: translateX(-20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-    
-    .message-time {
-        color: #ff00ff;
+    .popup-close {
+        font-family: 'Inter', sans-serif;
+        color: #a0a0a0;
         font-size: 12px;
-        margin-right: 10px;
-    }
-    
-    .message-icon {
-        display: inline-block;
-        width: 20px;
-        text-align: center;
-        margin-right: 10px;
-    }
-    
-    .glowing-text {
-        animation: textGlow 2s infinite;
-        font-family: 'Share Tech Mono', monospace;
-        color: #00ffff;
-        font-size: 16px;
-    }
-    
-    @keyframes textGlow {
-        0%, 100% { text-shadow: 0 0 10px #00ffff; }
-        50% { text-shadow: 0 0 20px #ff00ff; }
-    }
-    
-    /* Time display */
-    .time-display {
-        position: fixed;
-        top: 10px;
-        right: 20px;
-        font-family: 'Share Tech Mono', monospace;
-        color: #00ffff;
-        background: rgba(0, 0, 0, 0.5);
-        padding: 5px 15px;
-        border-radius: 20px;
-        border: 1px solid #00ffff;
-        z-index: 1000;
-        font-size: 12px;
-        backdrop-filter: blur(5px);
-    }
-    
-    .status-indicator {
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        background: #00ff00;
-        border-radius: 50%;
-        box-shadow: 0 0 10px #00ff00;
-        margin-right: 5px;
-        animation: pulse 1.5s infinite;
-    }
-    
-    @keyframes pulse {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.5; transform: scale(1.2); }
-    }
-    
-    /* File uploader */
-    .stFileUploader {
-        background: rgba(0, 255, 255, 0.05);
-        border: 2px dashed #00ffff;
-        border-radius: 10px;
-        padding: 20px;
-    }
-    
-    .stFileUploader:hover {
-        border-color: #ff00ff;
-        box-shadow: 0 0 30px rgba(255, 0, 255, 0.3);
-    }
-    
-    /* Divider */
-    .cyber-divider {
-        height: 2px;
-        background: linear-gradient(90deg, transparent, #00ffff, #ff00ff, #00ffff, transparent);
-        margin: 30px 0;
-    }
-    
-    /* Section headers */
-    .section-header {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 24px;
-        color: #00ffff;
-        text-shadow: 0 0 10px #00ffff;
-        margin: 20px 0;
-        border-left: 4px solid #ff00ff;
-        padding-left: 15px;
-    }
-    
-    /* Download button */
-    .stDownloadButton > button {
-        font-family: 'Orbitron', sans-serif;
-        background: linear-gradient(45deg, #ff00ff, #00ffff);
-        color: #000;
-        font-weight: 700;
-        border: none;
-        padding: 12px 30px;
-        border-radius: 30px;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+        cursor: pointer;
+        padding: 4px 12px;
+        border: 1px solid #a0a0a0;
+        border-radius: 4px;
         transition: all 0.3s ease;
     }
     
-    .stDownloadButton > button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 0 30px rgba(0, 255, 255, 0.7);
+    .popup-close:hover {
+        border-color: #667eea;
+        color: #667eea;
+    }
+    
+    .popup-progress-container {
+        margin: 20px 0;
+    }
+    
+    .popup-progress-label {
+        font-family: 'Inter', sans-serif;
+        color: #a0a0a0;
+        font-size: 12px;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .popup-progress-bar {
+        width: 100%;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+        overflow: hidden;
+        margin: 10px 0;
+    }
+    
+    .popup-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        transition: width 0.3s ease;
+    }
+    
+    .popup-percentage {
+        font-family: 'Poppins', sans-serif;
+        font-size: 32px;
+        font-weight: 600;
+        color: #667eea;
+        text-align: center;
+        margin: 15px 0;
+    }
+    
+    .popup-status {
+        font-family: 'Inter', sans-serif;
+        color: white;
+        font-size: 14px;
+        margin: 15px 0;
+        padding: 10px;
+        background: rgba(102, 126, 234, 0.1);
+        border-radius: 6px;
+        text-align: center;
+    }
+    
+    .popup-messages {
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(102, 126, 234, 0.2);
+        border-radius: 6px;
+        padding: 12px;
+        height: 150px;
+        overflow-y: auto;
+        font-family: 'Roboto Mono', monospace;
+        font-size: 11px;
+        margin-top: 15px;
+    }
+    
+    .popup-message {
+        padding: 4px 0;
+        color: #a0a0a0;
+        border-left: 2px solid #667eea;
+        padding-left: 8px;
+        margin: 5px 0;
+    }
+    
+    .popup-message-time {
+        color: #667eea;
+        margin-right: 8px;
+    }
+    
+    /* Sidebar styling */
+    .css-1d391kg {
+        background: #0a0f1f;
+    }
+    
+    .sidebar-header {
+        font-family: 'Poppins', sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        color: white;
+        margin: 20px 0 15px 0;
+    }
+    
+    .template-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(102, 126, 234, 0.2);
+        border-radius: 6px;
+        padding: 12px;
+        margin: 10px 0;
+    }
+    
+    /* Status indicator */
+    .status-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: #10b981;
+        border-radius: 50%;
+        margin-right: 6px;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
     }
 </style>
-
-<div class="time-display">
-    <span class="status-indicator"></span>
-    SYSTEM ONLINE // <span id="time"></span>
-</div>
-
-<script>
-    function updateTime() {
-        const now = new Date();
-        const timeString = now.getUTCFullYear() + '-' + 
-            String(now.getUTCMonth() + 1).padStart(2, '0') + '-' +
-            String(now.getUTCDate()).padStart(2, '0') + ' ' +
-            String(now.getUTCHours()).padStart(2, '0') + ':' +
-            String(now.getUTCMinutes()).padStart(2, '0') + ':' +
-            String(now.getUTCSeconds()).padStart(2, '0');
-        document.getElementById('time').textContent = timeString;
-    }
-    setInterval(updateTime, 1000);
-    updateTime();
-</script>
 """, unsafe_allow_html=True)
 
 # --------------------------------------------------
-# HEADER WITH CYBER STYLING
+# HEADER - COMPACT
 # --------------------------------------------------
 
-st.markdown("<h1 class='neon-title'>AI POWERED CENTER MATCHING SYSTEM</h1>", unsafe_allow_html=True)
-st.markdown("<div class='cyber-subtitle'>NEURAL MATCHING ENGINE</div>", unsafe_allow_html=True)
-st.markdown("<div class='company-name'>INNOVATIVIEW INDIA LIMITED</div>", unsafe_allow_html=True)
+st.markdown("<h1 class='main-title'>AI Center Matching System</h1>", unsafe_allow_html=True)
+st.markdown("<div class='sub-title'>Neural Matching Engine • Innovatiview India Limited</div>", unsafe_allow_html=True)
 
 # --------------------------------------------------
-# REALTIME DASHBOARD WITH METRIC CARDS
+# COMPACT METRICS ROW
 # --------------------------------------------------
 
 col1, col2, col3, col4 = st.columns(4)
@@ -471,7 +380,7 @@ col1, col2, col3, col4 = st.columns(4)
 with col1:
     st.markdown("""
     <div class='metric-card'>
-        <div class='metric-label'>⚡ AI ENGINE</div>
+        <div class='metric-label'>AI Engine</div>
         <div class='metric-value'>ACTIVE</div>
     </div>
     """, unsafe_allow_html=True)
@@ -479,7 +388,7 @@ with col1:
 with col2:
     st.markdown("""
     <div class='metric-card'>
-        <div class='metric-label'>🌀 EMBEDDING MODEL</div>
+        <div class='metric-label'>Model</div>
         <div class='metric-value'>BGE-BASE</div>
     </div>
     """, unsafe_allow_html=True)
@@ -487,73 +396,98 @@ with col2:
 with col3:
     st.markdown("""
     <div class='metric-card'>
-        <div class='metric-label'>🔍 VECTOR SEARCH</div>
-        <div class='metric-value'>FAISS HNSW</div>
+        <div class='metric-label'>Vector Search</div>
+        <div class='metric-value'>FAISS</div>
     </div>
     """, unsafe_allow_html=True)
 
 with col4:
     st.markdown("""
     <div class='metric-card'>
-        <div class='metric-label'>📡 SYSTEM STATUS</div>
-        <div class='metric-value'>ONLINE</div>
+        <div class='metric-label'>Status</div>
+        <div class='metric-value'><span class='status-dot'></span>ONLINE</div>
     </div>
     """, unsafe_allow_html=True)
 
-st.markdown("<div class='cyber-divider'></div>", unsafe_allow_html=True)
+st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 
 # --------------------------------------------------
-# DOWNLOAD TEMPLATE SECTION
+# COMPACT FILE UPLOAD SECTION
 # --------------------------------------------------
 
-st.markdown("<h2 class='section-header'>📥 DOWNLOAD TEMPLATES</h2>", unsafe_allow_html=True)
-
-colA, colB = st.columns(2)
-
-master_template = pd.DataFrame({
-    "center_id": ["1001"],
-    "center_name": ["ABC Public School"],
-    "district": ["Lucknow"],
-    "state": ["Uttar Pradesh"],
-    "address": ["Near City Mall"]
-})
-
-input_template = pd.DataFrame({
-    "center_name": ["ABC Public School"],
-    "district": ["Lucknow"],
-    "state": ["Uttar Pradesh"],
-    "address": ["Near City Mall"]
-})
-
-with colA:
-    st.download_button(
-        "⬇️ MASTER TEMPLATE",
-        master_template.to_csv(index=False),
-        "master_format.csv"
-    )
-
-with colB:
-    st.download_button(
-        "⬇️ INPUT TEMPLATE",
-        input_template.to_csv(index=False),
-        "input_format.csv"
-    )
-
-st.markdown("<div class='cyber-divider'></div>", unsafe_allow_html=True)
-
-# --------------------------------------------------
-# FILE UPLOAD SECTION
-# --------------------------------------------------
-
-st.markdown("<h2 class='section-header'>📡 DATA UPLOAD INTERFACE</h2>", unsafe_allow_html=True)
+st.markdown("<h2 class='section-header'>Data Upload</h2>", unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
 
-master_file = col1.file_uploader("MASTER DATABASE", type=["xlsx", "csv"], key="master")
-input_file = col2.file_uploader("INPUT STREAM", type=["xlsx", "csv"], key="input")
+with col1:
+    st.markdown("<div class='upload-label'>Master Database</div>", unsafe_allow_html=True)
+    master_file = st.file_uploader("", type=["xlsx", "csv"], key="master", label_visibility="collapsed")
+    if master_file:
+        file_size = len(master_file.getvalue()) / 1024
+        st.markdown(f"<div class='file-info'>📁 {master_file.name} • {file_size:.1f} KB</div>", unsafe_allow_html=True)
+
+with col2:
+    st.markdown("<div class='upload-label'>Input Stream</div>", unsafe_allow_html=True)
+    input_file = st.file_uploader("", type=["xlsx", "csv"], key="input", label_visibility="collapsed")
+    if input_file:
+        file_size = len(input_file.getvalue()) / 1024
+        st.markdown(f"<div class='file-info'>📁 {input_file.name} • {file_size:.1f} KB</div>", unsafe_allow_html=True)
+
+st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
 
 # --------------------------------------------------
-# LOAD MODEL (GPU SUPPORT)
+# SIDEBAR WITH TEMPLATES
+# --------------------------------------------------
+
+with st.sidebar:
+    st.markdown("<div class='sidebar-header'>📥 Templates</div>", unsafe_allow_html=True)
+    
+    master_template = pd.DataFrame({
+        "center_id": ["1001"],
+        "center_name": ["ABC Public School"],
+        "district": ["Lucknow"],
+        "state": ["Uttar Pradesh"],
+        "address": ["Near City Mall"]
+    })
+    
+    input_template = pd.DataFrame({
+        "center_name": ["ABC Public School"],
+        "district": ["Lucknow"],
+        "state": ["Uttar Pradesh"],
+        "address": ["Near City Mall"]
+    })
+    
+    st.markdown("<div class='template-card'>", unsafe_allow_html=True)
+    st.download_button(
+        "📋 Master Template",
+        master_template.to_csv(index=False),
+        "master_format.csv",
+        use_container_width=True
+    )
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    st.markdown("<div class='template-card'>", unsafe_allow_html=True)
+    st.download_button(
+        "📋 Input Template",
+        input_template.to_csv(index=False),
+        "input_format.csv",
+        use_container_width=True
+    )
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    st.markdown("<div class='divider'></div>", unsafe_allow_html=True)
+    
+    st.markdown("<div class='sidebar-header'>⚡ System Info</div>", unsafe_allow_html=True)
+    st.markdown("""
+    <div style='font-family: Inter; font-size: 12px; color: #a0a0a0;'>
+        • GPU: Available<br>
+        • Memory: 16GB<br>
+        • Version: 2.0.0
+    </div>
+    """, unsafe_allow_html=True)
+
+# --------------------------------------------------
+# LOAD MODEL
 # --------------------------------------------------
 
 @st.cache_resource
@@ -591,7 +525,48 @@ else:
     memory = pd.DataFrame(columns=["input_text", "match_center", "master_id"])
 
 # --------------------------------------------------
-# PROCESSING SECTION WITH SIMPLE POPUP
+# POPUP FUNCTION
+# --------------------------------------------------
+
+def show_progress_popup(progress, message, status, step_name, record_info=""):
+    """Display a professional popup with progress"""
+    
+    popup_html = f"""
+    <div class='popup-overlay'></div>
+    <div class='popup-container'>
+        <div class='popup-header'>
+            <div class='popup-title'>⚡ Neural Processing</div>
+            <div class='popup-close' onclick="this.closest('.popup-container').style.display='none'; document.querySelector('.popup-overlay').style.display='none';">✕</div>
+        </div>
+        
+        <div class='popup-progress-container'>
+            <div class='popup-progress-label'>Current Operation</div>
+            <div style='font-family: Poppins; color: white; font-size: 16px; margin-bottom: 15px;'>{step_name}</div>
+            
+            <div class='popup-progress-label'>Progress</div>
+            <div class='popup-progress-bar'>
+                <div class='popup-progress-fill' style='width: {progress}%;'></div>
+            </div>
+            <div class='popup-percentage'>{progress}%</div>
+            
+            <div class='popup-status'>
+                {message}
+            </div>
+            
+            {f"<div style='font-family: Roboto Mono; color: #667eea; text-align: center; margin: 10px 0; font-size: 12px;'>{record_info}</div>" if record_info else ""}
+            
+            <div class='popup-progress-label'>System Log</div>
+            <div class='popup-messages' id='popup-messages'>
+                {''.join([f"<div class='popup-message'><span class='popup-message-time'>[{datetime.now().strftime('%H:%M:%S')}]</span> {msg}</div>" for msg in status[-8:]])}
+            </div>
+        </div>
+    </div>
+    """
+    
+    return popup_html
+
+# --------------------------------------------------
+# PROCESSING SECTION WITH POPUP
 # --------------------------------------------------
 
 if master_file and input_file:
@@ -607,21 +582,21 @@ if master_file and input_file:
     else:
         input_data = pd.read_excel(input_file)
 
-    st.success("✅ FILES LOADED SUCCESSFULLY")
+    st.success("✅ Files loaded successfully")
     
-    # Create containers for progress display
-    progress_bar = st.progress(0)
-    status_text = st.empty()
+    # Create placeholder for popup
+    popup_placeholder = st.empty()
+    
+    # Initialize logs
+    logs = []
     
     # --------------------------------------------------
     # STEP 1: CLEAN MASTER DATA
     # --------------------------------------------------
-    status_text.markdown("""
-    <div style='text-align: center; font-family: Orbitron; color: #00ffff; font-size: 20px; margin: 20px;'>
-        ⚡ CLEANING MASTER DATA...
-    </div>
-    """, unsafe_allow_html=True)
-    progress_bar.progress(10)
+    logs.append("Initializing data cleaning...")
+    popup_placeholder.markdown(show_progress_popup(
+        10, "Cleaning master data", logs, "Data Preprocessing"
+    ), unsafe_allow_html=True)
     time.sleep(0.5)
     
     master["clean_name"] = master["center_name"].apply(clean_text)
@@ -634,52 +609,56 @@ if master_file and input_file:
         master["address"].astype(str)
     ).apply(clean_text)
     
-    progress_bar.progress(20)
+    logs.append(f"✓ Cleaned {len(master)} master records")
+    popup_placeholder.markdown(show_progress_popup(
+        20, "Data cleaning complete", logs, "Data Preprocessing"
+    ), unsafe_allow_html=True)
     time.sleep(0.5)
     
     # --------------------------------------------------
     # STEP 2: GENERATE EMBEDDINGS
     # --------------------------------------------------
-    status_text.markdown("""
-    <div style='text-align: center; font-family: Orbitron; color: #ff00ff; font-size: 20px; margin: 20px;'>
-        🌀 GENERATING QUANTUM EMBEDDINGS...
-    </div>
-    """, unsafe_allow_html=True)
-    progress_bar.progress(30)
+    logs.append("Generating embeddings...")
+    popup_placeholder.markdown(show_progress_popup(
+        30, "Creating vector representations", logs, "Embedding Generation"
+    ), unsafe_allow_html=True)
     
     embeddings = model.encode(master["combined"].tolist())
     embeddings = np.array(embeddings).astype("float32")
     
-    progress_bar.progress(45)
+    logs.append(f"✓ Generated {len(embeddings)} embeddings")
+    logs.append(f"✓ Dimension: {embeddings.shape[1]}")
+    popup_placeholder.markdown(show_progress_popup(
+        45, "Embeddings ready", logs, "Embedding Generation"
+    ), unsafe_allow_html=True)
     time.sleep(0.5)
     
     # --------------------------------------------------
     # STEP 3: BUILD FAISS INDEX
     # --------------------------------------------------
-    status_text.markdown("""
-    <div style='text-align: center; font-family: Orbitron; color: #00ffff; font-size: 20px; margin: 20px;'>
-        🔍 BUILDING FAISS INDEX...
-    </div>
-    """, unsafe_allow_html=True)
-    progress_bar.progress(50)
+    logs.append("Building FAISS index...")
+    popup_placeholder.markdown(show_progress_popup(
+        50, "Creating search index", logs, "Index Construction"
+    ), unsafe_allow_html=True)
     
     dim = embeddings.shape[1]
     index = faiss.IndexHNSWFlat(dim, 32)
     index.hnsw.efConstruction = 200
     index.add(embeddings)
     
-    progress_bar.progress(60)
+    logs.append("✓ FAISS index built successfully")
+    popup_placeholder.markdown(show_progress_popup(
+        60, "Index ready", logs, "Index Construction"
+    ), unsafe_allow_html=True)
     time.sleep(0.5)
     
     # --------------------------------------------------
     # STEP 4: EXECUTE MATCHING
     # --------------------------------------------------
-    status_text.markdown("""
-    <div style='text-align: center; font-family: Orbitron; color: #ff00ff; font-size: 20px; margin: 20px;'>
-        🎯 EXECUTING NEURAL MATCHING ALGORITHM...
-    </div>
-    """, unsafe_allow_html=True)
-    progress_bar.progress(65)
+    logs.append("Starting neural matching...")
+    popup_placeholder.markdown(show_progress_popup(
+        65, "Matching in progress", logs, "Pattern Recognition"
+    ), unsafe_allow_html=True)
     
     results = []
     ids = []
@@ -688,33 +667,29 @@ if master_file and input_file:
     
     total = len(input_data)
     
-    # Create a container for record progress
-    record_text = st.empty()
-    
     for i, row in input_data.iterrows():
-        # Update progress
+        # Update progress (65% to 95%)
         progress = 65 + int((i / total) * 30)
-        progress_bar.progress(progress)
         
-        # Show current record
-        record_text.markdown(f"""
-        <div style='text-align: center; font-family: Share Tech Mono; color: #00ffff; font-size: 16px; margin: 10px;'>
-            PROCESSING RECORD {i+1}/{total} • {int((i+1)/total*100)}%
-        </div>
-        """, unsafe_allow_html=True)
+        if i % max(1, total // 10) == 0:
+            logs.append(f"⚡ Processing batch {i+1}-{min(i+10, total)}/{total}")
+            popup_placeholder.markdown(show_progress_popup(
+                progress, f"Matching records...", logs, "Pattern Recognition",
+                f"Record {i+1} of {total} • {int((i+1)/total*100)}%"
+            ), unsafe_allow_html=True)
         
         name = clean_text(row["center_name"])
         address = clean_text(row["address"])
         
         combined = f"{name} {row['district']} {row['state']} {address}"
         
-        # Check memory first
+        # Check memory
         mem_check = memory[memory["input_text"] == combined]
         if not mem_check.empty:
             results.append(mem_check.iloc[0]["match_center"])
             ids.append(mem_check.iloc[0]["master_id"])
             scores.append(1.0)
-            explanation.append("MEMORY RECALL")
+            explanation.append("Memory recall")
             continue
         
         # Vector search
@@ -745,13 +720,10 @@ if master_file and input_file:
             scores.append(best_score)
             explanation.append(best_reason)
         else:
-            results.append("⚡ NO MATCH")
+            results.append("⚡ No Match")
             ids.append("NULL")
             scores.append(best_score)
-            explanation.append(f"LOW CONF:{best_score:.2f}")
-    
-    progress_bar.progress(95)
-    record_text.empty()
+            explanation.append(f"Low conf:{best_score:.2f}")
     
     # Add results to dataframe
     input_data["Matched Center"] = results
@@ -762,41 +734,39 @@ if master_file and input_file:
     # --------------------------------------------------
     # STEP 5: FINALIZE
     # --------------------------------------------------
-    status_text.markdown("""
-    <div style='text-align: center; font-family: Orbitron; color: #00ff00; font-size: 20px; margin: 20px;'>
-        ✅ PROCESSING COMPLETE!
-    </div>
-    """, unsafe_allow_html=True)
-    progress_bar.progress(100)
-    time.sleep(1)
+    match_rate = len([s for s in scores if s > 0.9]) / len(scores) * 100
+    logs.append(f"✓ Match rate: {match_rate:.1f}%")
+    logs.append("✓ Processing complete")
     
-    # Clear status
-    status_text.empty()
+    popup_placeholder.markdown(show_progress_popup(
+        100, "Processing complete!", logs, "Finalizing",
+        f"Processed {total} records • {match_rate:.1f}% match rate"
+    ), unsafe_allow_html=True)
+    
+    time.sleep(2)
+    popup_placeholder.empty()
     
     # --------------------------------------------------
-    # REAL TIME STATISTICS
+    # RESULTS SECTION
     # --------------------------------------------------
     
-    st.markdown("<h2 class='section-header'>📊 MATCHING STATISTICS</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 class='section-header'>Results</h2>", unsafe_allow_html=True)
     
     col1, col2, col3, col4 = st.columns(4)
-    
-    match_rate = len([s for s in scores if s > 0.9]) / len(scores) * 100
-    avg_score = np.mean(scores) * 100
-    high_conf = len([s for s in scores if s > 0.95])
     
     with col1:
         st.markdown(f"""
         <div class='metric-card'>
-            <div class='metric-label'>🎯 MATCH RATE</div>
+            <div class='metric-label'>Match Rate</div>
             <div class='metric-value'>{match_rate:.1f}%</div>
         </div>
         """, unsafe_allow_html=True)
     
     with col2:
+        avg_score = np.mean(scores) * 100
         st.markdown(f"""
         <div class='metric-card'>
-            <div class='metric-label'>📈 AVG CONFIDENCE</div>
+            <div class='metric-label'>Avg Confidence</div>
             <div class='metric-value'>{avg_score:.1f}%</div>
         </div>
         """, unsafe_allow_html=True)
@@ -804,43 +774,39 @@ if master_file and input_file:
     with col3:
         st.markdown(f"""
         <div class='metric-card'>
-            <div class='metric-label'>📊 RECORDS</div>
+            <div class='metric-label'>Records</div>
             <div class='metric-value'>{len(scores)}</div>
         </div>
         """, unsafe_allow_html=True)
     
     with col4:
+        high_conf = len([s for s in scores if s > 0.95])
         st.markdown(f"""
         <div class='metric-card'>
-            <div class='metric-label'>⭐ HIGH CONFIDENCE</div>
+            <div class='metric-label'>High Confidence</div>
             <div class='metric-value'>{high_conf}</div>
         </div>
         """, unsafe_allow_html=True)
     
-    # --------------------------------------------------
-    # HEATMAP STYLING
-    # --------------------------------------------------
-    
+    # Dataframe with styling
     def highlight_score(val):
         if val > 0.95:
-            return 'background: rgba(0, 255, 0, 0.3); color: #00ff00; font-weight: bold'
+            return 'background: rgba(16, 185, 129, 0.2); color: #10b981;'
         elif val > 0.90:
-            return 'background: rgba(255, 255, 0, 0.3); color: #ffff00; font-weight: bold'
+            return 'background: rgba(245, 158, 11, 0.2); color: #f59e0b;'
         else:
-            return 'background: rgba(255, 0, 0, 0.3); color: #ff6666'
+            return 'background: rgba(239, 68, 68, 0.2); color: #ef4444;'
     
     styled_df = input_data.style.map(highlight_score, subset=["Score"])
-    st.dataframe(styled_df, use_container_width=True)
+    st.dataframe(styled_df, use_container_width=True, height=300)
     
-    # --------------------------------------------------
-    # SAVE CORRECTION MEMORY
-    # --------------------------------------------------
+    # Action buttons
+    col1, col2, col3 = st.columns(3)
     
-    col_btn1, col_btn2, col_btn3 = st.columns([1, 2, 1])
-    with col_btn2:
-        if st.button("💾 SAVE TO NEURAL MEMORY BANK", use_container_width=True):
+    with col1:
+        if st.button("💾 Save to Memory", use_container_width=True):
             for _, r in input_data.iterrows():
-                if r["Matched Center"] != "⚡ NO MATCH":
+                if r["Matched Center"] != "⚡ No Match":
                     txt = clean_text(
                         f"{r['center_name']} {r['district']} {r['state']} {r['address']}"
                     )
@@ -852,18 +818,16 @@ if master_file and input_file:
             
             memory.drop_duplicates(inplace=True)
             memory.to_csv(memory_file, index=False)
-            st.success("✅ MEMORY BANK UPDATED SUCCESSFULLY")
-            st.balloons()
+            st.success("✅ Memory updated")
     
-    # --------------------------------------------------
-    # DOWNLOAD RESULT
-    # --------------------------------------------------
-    
-    col_dl1, col_dl2, col_dl3 = st.columns([1, 2, 1])
-    with col_dl2:
+    with col2:
         st.download_button(
-            "⬇️ DOWNLOAD MATCHING RESULTS",
+            "📥 Download CSV",
             input_data.to_csv(index=False),
-            f"matching_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+            f"results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
             use_container_width=True
         )
+    
+    with col3:
+        if st.button("🔄 New Match", use_container_width=True):
+            st.rerun()
