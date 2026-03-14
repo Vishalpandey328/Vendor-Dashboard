@@ -19,67 +19,96 @@ st.set_page_config(
 )
 
 st.title("🎯 AI Powered Center Matching System")
-st.caption("Neural Matching Engine")
 
 # --------------------------------------------------
-# LOAD EMBEDDING MODEL
+# DOWNLOAD TEMPLATES
+# --------------------------------------------------
+
+master_template = pd.DataFrame({
+    "center_id":["1001"],
+    "center_name":["ABC Public School"],
+    "district":["Lucknow"],
+    "state":["Uttar Pradesh"],
+    "address":["Near City Mall"]
+})
+
+input_template = pd.DataFrame({
+    "center_name":["ABC Public School"],
+    "district":["Lucknow"],
+    "state":["Uttar Pradesh"],
+    "address":["Near City Mall"]
+})
+
+c1,c2=st.columns(2)
+
+with c1:
+    st.download_button(
+        "Download Master Template",
+        master_template.to_csv(index=False),
+        "master_template.csv"
+    )
+
+with c2:
+    st.download_button(
+        "Download Input Template",
+        input_template.to_csv(index=False),
+        "input_template.csv"
+    )
+
+# --------------------------------------------------
+# LOAD MODEL
 # --------------------------------------------------
 
 @st.cache_resource
 def load_model():
-    model = SentenceTransformer("BAAI/bge-base-en")
-    return model
+    return SentenceTransformer("BAAI/bge-base-en")
 
-model = load_model()
+model=load_model()
 
 # --------------------------------------------------
 # SYNONYM SYSTEM
 # --------------------------------------------------
 
-synonym_file = "synonyms.xlsx"
+synonym_file="synonyms.xlsx"
 
 if os.path.exists(synonym_file):
-    synonym_df = pd.read_excel(synonym_file)
+    synonym_df=pd.read_excel(synonym_file)
 else:
-    synonym_df = pd.DataFrame(columns=["main_word","synonym"])
+    synonym_df=pd.DataFrame(columns=["main_word","synonym"])
 
 def build_synonym_dict(df):
 
-    syn_dict = {}
+    syn_dict={}
 
     for _,row in df.iterrows():
 
-        main = str(row["main_word"]).lower()
-        syn = str(row["synonym"]).lower()
+        main=row["main_word"].lower()
+        syn=row["synonym"].lower()
 
         if main not in syn_dict:
-            syn_dict[main] = []
+            syn_dict[main]=[]
 
         syn_dict[main].append(syn)
 
     return syn_dict
 
-synonyms = build_synonym_dict(synonym_df)
+synonyms=build_synonym_dict(synonym_df)
 
 # --------------------------------------------------
-# SIDEBAR SYNONYM EDITOR
+# SYNONYM EDITOR
 # --------------------------------------------------
 
-st.sidebar.header("🧠 Synonym Manager")
+st.sidebar.header("Synonym Manager")
 
-edited_synonyms = st.sidebar.data_editor(
+edited=st.sidebar.data_editor(
     synonym_df,
-    num_rows="dynamic",
-    use_container_width=True
+    num_rows="dynamic"
 )
 
 if st.sidebar.button("Save Synonyms"):
-
-    edited_synonyms.to_excel(synonym_file,index=False)
-
+    edited.to_excel(synonym_file,index=False)
     st.sidebar.success("Synonyms saved")
-
-    synonyms = build_synonym_dict(edited_synonyms)
+    synonyms=build_synonym_dict(edited)
 
 # --------------------------------------------------
 # TEXT CLEANING
@@ -87,53 +116,68 @@ if st.sidebar.button("Save Synonyms"):
 
 def normalize_synonyms(text):
 
-    text = str(text).lower()
+    text=str(text).lower()
 
     for main_word, variations in synonyms.items():
 
-        for word in variations:
+        for v in variations:
 
-            pattern = r"\b" + re.escape(word) + r"\b"
+            pattern=r"\b"+re.escape(v)+r"\b"
 
-            text = re.sub(pattern, main_word, text)
+            text=re.sub(pattern,main_word,text)
 
     return text
 
 
 def clean_text(text):
 
-    text = str(text).lower()
+    text=str(text).lower()
 
-    text = normalize_synonyms(text)
+    text=normalize_synonyms(text)
 
-    text = re.sub(r"[^\w\s]","",text)
+    text=re.sub(r"[^\w\s]","",text)
 
-    text = re.sub(r"\s+"," ",text)
+    text=re.sub(r"\s+"," ",text)
 
     return text.strip()
+
+# --------------------------------------------------
+# STATE STANDARDIZATION
+# --------------------------------------------------
+
+state_map={
+"jammu & kashmir":"jammu and kashmir",
+"jk":"jammu and kashmir"
+}
+
+def standardize_state(s):
+
+    s=str(s).lower()
+
+    return state_map.get(s,s)
 
 # --------------------------------------------------
 # MEMORY SYSTEM
 # --------------------------------------------------
 
-memory_file = "learning_memory.csv"
+memory_file="learning_memory.csv"
 
 if os.path.exists(memory_file):
-    memory = pd.read_csv(memory_file)
+    memory=pd.read_csv(memory_file)
 else:
-    memory = pd.DataFrame(columns=["input_text","match_center","master_id"])
+    memory=pd.DataFrame(columns=["input_text","match_center","master_id"])
 
 # --------------------------------------------------
 # FILE UPLOAD
 # --------------------------------------------------
 
-col1,col2 = st.columns(2)
+col1,col2=st.columns(2)
 
 with col1:
-    master_file = st.file_uploader("Upload Master File",type=["xlsx","csv"])
+    master_file=st.file_uploader("Upload Master File",type=["csv","xlsx"])
 
 with col2:
-    input_file = st.file_uploader("Upload Input File",type=["xlsx","csv"])
+    input_file=st.file_uploader("Upload Input File",type=["csv","xlsx"])
 
 # --------------------------------------------------
 # PROCESS FILES
@@ -142,56 +186,35 @@ with col2:
 if master_file and input_file:
 
     if master_file.name.endswith(".csv"):
-        master = pd.read_csv(master_file)
+        master=pd.read_csv(master_file)
     else:
-        master = pd.read_excel(master_file)
+        master=pd.read_excel(master_file)
 
     if input_file.name.endswith(".csv"):
-        input_data = pd.read_csv(input_file)
+        input_data=pd.read_csv(input_file)
     else:
-        input_data = pd.read_excel(input_file)
+        input_data=pd.read_excel(input_file)
 
     st.success("Files Loaded")
 
 # --------------------------------------------------
-# CLEAN MASTER DATA
+# CLEAN MASTER
 # --------------------------------------------------
 
-    master["clean_name"] = master["center_name"].apply(clean_text)
+    master["state_clean"]=master["state"].apply(standardize_state)
+    master["district_clean"]=master["district"].apply(clean_text)
+    master["clean_name"]=master["center_name"].apply(clean_text)
+    master["clean_address"]=master["address"].apply(clean_text)
 
-    master["clean_address"] = master["address"].apply(clean_text)
-
-    master["combined"] = (
-        master["center_name"].astype(str) + " " +
-        master["district"].astype(str) + " " +
-        master["state"].astype(str) + " " +
+    master["combined"]=(
+        master["center_name"].astype(str)+" "+
+        master["district"].astype(str)+" "+
+        master["state"].astype(str)+" "+
         master["address"].astype(str)
     ).apply(clean_text)
 
 # --------------------------------------------------
-# GENERATE EMBEDDINGS
-# --------------------------------------------------
-
-    with st.spinner("Generating embeddings..."):
-
-        embeddings = model.encode(master["combined"].tolist())
-
-        embeddings = np.array(embeddings).astype("float32")
-
-# --------------------------------------------------
-# BUILD FAISS INDEX
-# --------------------------------------------------
-
-    dim = embeddings.shape[1]
-
-    index = faiss.IndexHNSWFlat(dim,32)
-
-    index.hnsw.efConstruction = 200
-
-    index.add(embeddings)
-
-# --------------------------------------------------
-# MATCHING ENGINE
+# RESULTS STORAGE
 # --------------------------------------------------
 
     results=[]
@@ -203,7 +226,11 @@ if master_file and input_file:
     matched_district=[]
     matched_state=[]
 
-    progress = st.progress(0)
+# --------------------------------------------------
+# MATCHING ENGINE
+# --------------------------------------------------
+
+    progress=st.progress(0)
 
     total=len(input_data)
 
@@ -211,44 +238,73 @@ if master_file and input_file:
 
         progress.progress((i+1)/total)
 
-        name = clean_text(row["center_name"])
-        address = clean_text(row["address"])
+        name=clean_text(row["center_name"])
+        address=clean_text(row["address"])
+        district=clean_text(row["district"])
+        state=standardize_state(row["state"])
 
-        combined = f"{name} {row['district']} {row['state']} {address}"
+        combined=f"{name} {district} {state} {address}"
 
 # --------------------------------------------------
 # MEMORY CHECK
 # --------------------------------------------------
 
-        mem = memory[memory["input_text"]==combined]
+        mem=memory[memory["input_text"]==combined]
 
         if not mem.empty:
 
-            master_row = master[master["center_id"]==mem.iloc[0]["master_id"]].iloc[0]
+            m=master[master["center_id"]==mem.iloc[0]["master_id"]].iloc[0]
 
             results.append(mem.iloc[0]["match_center"])
             ids.append(mem.iloc[0]["master_id"])
             scores.append(1.0)
             explanation.append("Memory Recall")
 
-            matched_address.append(master_row["address"])
-            matched_district.append(master_row["district"])
-            matched_state.append(master_row["state"])
+            matched_address.append(m["address"])
+            matched_district.append(m["district"])
+            matched_state.append(m["state"])
 
             continue
 
 # --------------------------------------------------
-# VECTOR SEARCH
+# FILTER MASTER
 # --------------------------------------------------
 
-        emb = model.encode([combined])
-        emb = np.array(emb).astype("float32")
+        filtered_master=master[
+            (master["state_clean"]==state)&
+            (master["district_clean"]==district)
+        ]
+
+        if filtered_master.empty:
+
+            filtered_master=master[
+                master["state_clean"]==state
+            ]
+
+# --------------------------------------------------
+# FAISS SEARCH
+# --------------------------------------------------
+
+        texts=filtered_master["combined"].tolist()
+
+        emb=model.encode(texts)
+
+        emb=np.array(emb).astype("float32")
+
+        dim=emb.shape[1]
+
+        index=faiss.IndexFlatL2(dim)
+
+        index.add(emb)
+
+        query_emb=model.encode([combined])
+        query_emb=np.array(query_emb).astype("float32")
 
         k=5
 
-        D,I = index.search(emb,k)
+        D,I=index.search(query_emb,k)
 
-        candidates = master.iloc[I[0]]
+        candidates=filtered_master.iloc[I[0]]
 
 # --------------------------------------------------
 # FUZZY RANKING
@@ -256,12 +312,12 @@ if master_file and input_file:
 
         best_score=0
         best=None
-        best_reason=""
+        reason=""
 
         for _,m in candidates.iterrows():
 
-            name_score = fuzz.token_set_ratio(name,m["clean_name"])/100
-            addr_score = fuzz.token_set_ratio(address,m["clean_address"])/100
+            name_score=fuzz.token_set_ratio(name,m["clean_name"])/100
+            addr_score=fuzz.token_set_ratio(address,m["clean_address"])/100
 
             score=(0.6*name_score)+(0.4*addr_score)
 
@@ -269,7 +325,7 @@ if master_file and input_file:
 
                 best_score=score
                 best=m
-                best_reason=f"N:{name_score:.2f}|A:{addr_score:.2f}"
+                reason=f"N:{name_score:.2f}|A:{addr_score:.2f}"
 
 # --------------------------------------------------
 # FINAL DECISION
@@ -280,11 +336,19 @@ if master_file and input_file:
             results.append(best["center_name"])
             ids.append(best["center_id"])
             scores.append(best_score)
-            explanation.append(best_reason)
+            explanation.append(reason)
 
             matched_address.append(best["address"])
             matched_district.append(best["district"])
             matched_state.append(best["state"])
+
+# save learning
+
+            memory.loc[len(memory)]=[
+                combined,
+                best["center_name"],
+                best["center_id"]
+            ]
 
         else:
 
@@ -298,7 +362,15 @@ if master_file and input_file:
             matched_state.append("")
 
 # --------------------------------------------------
-# SAVE RESULTS
+# SAVE MEMORY
+# --------------------------------------------------
+
+    memory.drop_duplicates(inplace=True)
+
+    memory.to_csv(memory_file,index=False)
+
+# --------------------------------------------------
+# OUTPUT
 # --------------------------------------------------
 
     input_data["Matched Center"]=results
@@ -310,51 +382,12 @@ if master_file and input_file:
     input_data["Explanation"]=explanation
 
 # --------------------------------------------------
-# SHOW RESULTS
+# DISPLAY
 # --------------------------------------------------
 
     st.subheader("Results")
 
     st.dataframe(input_data,use_container_width=True)
-
-# --------------------------------------------------
-# METRICS
-# --------------------------------------------------
-
-    match_rate=len([s for s in scores if s>0.9])/len(scores)*100
-    avg_score=np.mean(scores)*100
-
-    c1,c2,c3=st.columns(3)
-
-    c1.metric("Match Rate",f"{match_rate:.1f}%")
-    c2.metric("Average Confidence",f"{avg_score:.1f}%")
-    c3.metric("Records",len(scores))
-
-# --------------------------------------------------
-# SAVE MEMORY
-# --------------------------------------------------
-
-    if st.button("Save Learning Memory"):
-
-        for _,r in input_data.iterrows():
-
-            if r["Matched Center"]!="No Match":
-
-                txt=clean_text(
-                    f"{r['center_name']} {r['district']} {r['state']} {r['address']}"
-                )
-
-                memory.loc[len(memory)]=[
-                    txt,
-                    r["Matched Center"],
-                    r["Master ID"]
-                ]
-
-        memory.drop_duplicates(inplace=True)
-
-        memory.to_csv(memory_file,index=False)
-
-        st.success("Memory Updated")
 
 # --------------------------------------------------
 # DOWNLOAD
@@ -363,5 +396,5 @@ if master_file and input_file:
     st.download_button(
         "Download Result CSV",
         input_data.to_csv(index=False),
-        f"match_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+        f"matching_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
     )
