@@ -14,7 +14,7 @@ from sentence_transformers import SentenceTransformer
 
 
 st.set_page_config(
-    page_title="AI Center Matching System",
+    page_title="AI Powred Center Matching System",
     page_icon="🎯",
     layout="wide",
     initial_sidebar_state="expanded"
