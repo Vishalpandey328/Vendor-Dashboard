@@ -11,7 +11,7 @@ from sentence_transformers import SentenceTransformer
 
 # --------------------------------------------------
 # PAGE CONFIG
-# --------------------------------------------------
+
 
 st.set_page_config(
     page_title="AI Center Matching System",
@@ -744,9 +744,9 @@ if master_file and input_file:
     
     # Dataframe with styling
     def highlight_score(val):
-        if val > 0.95:
+        if val > 0.60:
             return 'background: rgba(16, 185, 129, 0.2); color: #10b981;'
-        elif val > 0.90:
+        elif val > 0.60:
             return 'background: rgba(245, 158, 11, 0.2); color: #f59e0b;'
         else:
             return 'background: rgba(239, 68, 68, 0.2); color: #ef4444;'
